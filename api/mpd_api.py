@@ -1,91 +1,178 @@
 import mpd
-
-client = mpd.MPDClient(use_unicode=True)
-
-
-def connect():
-    client.connect("localhost", 6600)
+import logging
+import subprocess
 
 
-def stop():
-    connect()
-    client.stop()
-    client.disconnect()
+class MPDAPI(object):
 
+    client = mpd.MPDClient(use_unicode=True)
+    host = "localhost"
+    port = 6600
+    logger = logging.getLogger('player')
 
-def pause():
-    connect()
-    client.pause()
-    client.disconnect()
+    def _execute(self, cmd):
+        """
 
+        :param cmd:
+        :return:
+        """
 
-def play():
-    connect()
-    client.play()
-    client.disconnect()
+        p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+        out, err = p.communicate()
+        out = out.decode('utf-8') if out else ''
+        if err:
+            if out:
+                out += '\n'
+            out += 'Stderr: ' + err.decode('utf-8')
+        self.logger.debug('>>> %s', cmd)
+        self.logger.debug('code: %s | %s', p.returncode, out)
+        return p.returncode == 0, out
 
+    def _start_mpd(self):
+        """
 
-def play_song(song):
-    connect()
-    client.clear()
-    client.add(song)
-    client.play()
-    client.disconnect()
+        :return:
+        """
 
+        self._execute(['mpd'])
 
-def add_to_playlist(song):
-    pass
+    def _exit_mpd(self):
+        """
 
+        :return:
+        """
 
-def get_random_song():
-    pass
+        self._execute(['mpd', '--kill'])
 
+    def connect(self, host="localhost", port=6600):
+        """
 
-def get_playlist():
-    pass
+        :param host:
+        :param port:
+        :return:
+        """
 
+        try:
+            self.client.connect(host, port)
 
-def get_artists():
-    connect()
-    artists = client.list('artist')
-    client.disconnect()
-    return artists
+        except ConnectionRefusedError:
+            self._start_mpd()
+            self.client.connect(host, port)
+            pass
 
+        except ConnectionError:
+            pass
 
-# def get_albums(artist):
-#     connect()
-#     albums = client.list('album', 'artist', artist) if artist else client.list('album')
-#     client.disconnect()
-#     return albums
+    def stop(self):
+        """
 
+        :return:
+        """
 
-def get_albums(artist):
-    connect()
-    songs = client.find('albumartist', artist)
-    client.disconnect()
-    return songs
+        self.connect(host=self.host, port=self.port)
+        self.client.stop()
+        self.client.disconnect()
 
+    def pause(self):
+        self.connect(host=self.host, port=self.port)
+        self.client.pause()
+        self.client.disconnect()
 
-def get_songs(artist, album):
-    connect()
-    songs = client.find('albumartist', artist, 'album', album)
-    client.disconnect()
-    return songs
+    def play(self):
+        """
 
+        :return:
+        """
 
-def get_titles():
-    pass
+        self.connect(host=self.host, port=self.port)
+        self.client.play()
+        self.client.disconnect()
 
+    def play_song(self, song):
+        """
 
-def get_status():
-    connect()
-    status = client.status()
-    client.disconnect()
-    return status
+        :param song:
+        :return:
+        """
 
+        self.connect(host=self.host, port=self.port)
+        self.client.clear()
+        self.client.add(song)
+        self.client.play()
+        self.client.disconnect()
 
-def get_current_song():
-    connect()
-    song = client.currentsong()
-    client.disconnect()
-    return song
+    def add_to_playlist(song):
+        pass
+
+    def get_random_song(self):
+        pass
+
+    def get_playlist(self):
+        pass
+
+    def get_artists(self):
+        """
+
+        :return:
+        """
+
+        self.connect(host=self.host, port=self.port)
+        artists = self.client.list('artist')
+        self.client.disconnect()
+        return artists
+
+    # def get_albums(artist):
+    #     connect()
+    #     albums = client.list('album', 'artist', artist) if artist else client.list('album')
+    #     client.disconnect()
+    #     return albums
+
+    def get_albums(self, artist):
+        """
+
+        :param artist:
+        :return:
+        """
+
+        self.connect(host=self.host, port=self.port)
+        songs = self.client.find('albumartist', artist)
+        self.client.disconnect()
+        return songs
+
+    def get_songs(self, artist, album):
+        """
+
+        :param artist:
+        :param album:
+        :return:
+        """
+
+        self.connect(host=self.host, port=self.port)
+        songs = self.client.find('albumartist', artist, 'album', album)
+        self.client.disconnect()
+        return songs
+
+    def get_titles(self):
+        pass
+
+    def get_status(self):
+        """
+
+        :return:
+        """
+
+        self.connect(host=self.host, port=self.port)
+        status = self.client.status()
+        self.client.disconnect()
+        return status
+
+    def get_current_song(self):
+        """
+
+        :return:
+        """
+
+        self.connect(host=self.host, port=self.port)
+        song = self.client.currentsong()
+        self.client.disconnect()
+        return song
