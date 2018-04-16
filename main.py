@@ -1,9 +1,11 @@
-import sys
 from flask import Flask, render_template, request, jsonify
-from api import mpd_api
 from mpd_helper import parse_albums_from_mpd, parse_songs_from_mpd
 
+from api.mpd_api import MPDAPI
+
+DEBUG_MODE = True
 app = Flask(__name__)
+api = MPDAPI()
 
 
 @app.route("/")
@@ -13,20 +15,20 @@ def hello():
 
 @app.route("/player")
 def player():
-    artists = mpd_api.get_artists()
+    artists = api.get_artists()
     return render_template('player.html', artists=artists)
 
 
 @app.route("/albums")
 def albums():
-    mpd_albums = mpd_api.get_albums(request.args.get('artist'))
+    mpd_albums = api.get_albums(request.args.get('artist'))
     albums = parse_albums_from_mpd(mpd_albums)
     return jsonify(albums)
 
 
 @app.route("/songs")
 def songs():
-    mpd_songs = mpd_api.get_songs(
+    mpd_songs = api.get_songs(
         request.args.get('artist'),
         request.args.get('album'),
     )
@@ -36,7 +38,7 @@ def songs():
 
 @app.route("/play")
 def play():
-    mpd_api.play_song(request.args.get('file'))
+    api.play_song(request.args.get('file'))
     return "Song should now be playing!"
 
 
@@ -44,24 +46,24 @@ def play():
 def control():
     cmd = request.args.get('cmd')
     if cmd == 'pause':
-        mpd_api.pause()
+        api.pause()
     elif cmd == 'stop':
-        mpd_api.stop()
+        api.stop()
     elif cmd == 'play':
-        mpd_api.play()
+        api.play()
     return "Command executed!"
 
 
 @app.route("/current")
 def current():
-    return jsonify(mpd_api.get_current_song())
+    return jsonify(api.get_current_song())
 
 
 # TODO: merge with current so we only need one request
 @app.route("/status")
 def status():
-    return jsonify(mpd_api.get_status())
+    return jsonify(api.get_status())
 
 
 if __name__ == "__main__":
-    app.run(host= '0.0.0.0')
+    app.run(host='0.0.0.0', debug=DEBUG_MODE)
