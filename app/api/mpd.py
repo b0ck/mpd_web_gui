@@ -3,20 +3,15 @@ import logging
 import subprocess
 
 
-class MPDAPI(object):
+class MpdApi(object):
 
-    client = mpd.MPDClient(use_unicode=True)
-    host = "localhost"
-    port = 6600
-    logger = logging.getLogger('player')
+    def __init__(self):
+        self.client = mpd.MPDClient(use_unicode=True)
+        self.host = "localhost"
+        self.port = 6600
+        self.logger = logging.getLogger('player')
 
     def _execute(self, cmd):
-        """
-
-        :param cmd:
-        :return:
-        """
-
         p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
         out, err = p.communicate()
         out = out.decode('utf-8') if out else ''
@@ -29,73 +24,43 @@ class MPDAPI(object):
         return p.returncode == 0, out
 
     def _start_mpd(self):
-        """
-
-        :return:
-        """
-
         self._execute(['mpd'])
 
     def _exit_mpd(self):
-        """
-
-        :return:
-        """
-
         self._execute(['mpd', '--kill'])
 
-    def connect(self, host="localhost", port=6600):
-        """
+    def cleanup(self):
+        self._exit_mpd()
 
-        :param host:
-        :param port:
-        :return:
-        """
-
+    def connect(self):
         try:
-            self.client.connect(host, port)
+            self.client.connect(self.host, self.port)
 
         except ConnectionRefusedError:
             self._start_mpd()
-            self.client.connect(host, port)
+            self.client.connect(self.host, self.port)
             pass
 
         except ConnectionError:
             pass
 
     def stop(self):
-        """
-
-        :return:
-        """
-
-        self.connect(host=self.host, port=self.port)
+        self.connect()
         self.client.stop()
         self.client.disconnect()
 
     def pause(self):
-        self.connect(host=self.host, port=self.port)
+        self.connect()
         self.client.pause()
         self.client.disconnect()
 
     def play(self):
-        """
-
-        :return:
-        """
-
-        self.connect(host=self.host, port=self.port)
+        self.connect()
         self.client.play()
         self.client.disconnect()
 
     def play_song(self, song):
-        """
-
-        :param song:
-        :return:
-        """
-
-        self.connect(host=self.host, port=self.port)
+        self.connect()
         self.client.clear()
         self.client.add(song)
         self.client.play()
@@ -111,43 +76,19 @@ class MPDAPI(object):
         pass
 
     def get_artists(self):
-        """
-
-        :return:
-        """
-
-        self.connect(host=self.host, port=self.port)
+        self.connect()
         artists = self.client.list('artist')
         self.client.disconnect()
         return artists
 
-    # def get_albums(artist):
-    #     connect()
-    #     albums = client.list('album', 'artist', artist) if artist else client.list('album')
-    #     client.disconnect()
-    #     return albums
-
     def get_albums(self, artist):
-        """
-
-        :param artist:
-        :return:
-        """
-
-        self.connect(host=self.host, port=self.port)
+        self.connect()
         songs = self.client.find('albumartist', artist)
         self.client.disconnect()
         return songs
 
     def get_songs(self, artist, album):
-        """
-
-        :param artist:
-        :param album:
-        :return:
-        """
-
-        self.connect(host=self.host, port=self.port)
+        self.connect()
         songs = self.client.find('albumartist', artist, 'album', album)
         self.client.disconnect()
         return songs
@@ -156,23 +97,13 @@ class MPDAPI(object):
         pass
 
     def get_status(self):
-        """
-
-        :return:
-        """
-
-        self.connect(host=self.host, port=self.port)
+        self.connect()
         status = self.client.status()
         self.client.disconnect()
         return status
 
     def get_current_song(self):
-        """
-
-        :return:
-        """
-
-        self.connect(host=self.host, port=self.port)
+        self.connect()
         song = self.client.currentsong()
         self.client.disconnect()
         return song

@@ -1,19 +1,16 @@
+import atexit
+
 from flask import Flask, render_template, request, jsonify
 from mpd_helper import parse_albums_from_mpd, parse_songs_from_mpd
 
-from api.mpd_api import MPDAPI
+from api import MpdApi
 
 DEBUG_MODE = True
 app = Flask(__name__)
-api = MPDAPI()
+api = MpdApi()
 
 
 @app.route("/")
-def hello():
-    return "Hello, World!"
-
-
-@app.route("/player")
 def player():
     artists = api.get_artists()
     return render_template('player.html', artists=artists)
@@ -65,5 +62,6 @@ def status():
     return jsonify(api.get_status())
 
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=DEBUG_MODE)
+app.run(host='0.0.0.0', debug=DEBUG_MODE)
+
+atexit.register(api.cleanup)

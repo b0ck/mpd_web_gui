@@ -25,7 +25,7 @@ state_file         "~/.mpd/state"
 sticker_file       "~/.mpd/sticker.sql"
 ```
 
-Run mpd: `mpd`
+Optional: run mpd (will be started automatically): `mpd`
 
 ### Python
 
@@ -35,9 +35,9 @@ Install dependencies: `pip install -r requirements.txt`
 Or manually: `pip install flask && pip install python-mpd2`
 
 ## Running server
-`python main.py`
+`python player.py`
 
-Then go to: [http://localhost:5000/player](http://localhost:5000/player)
+Then go to: [http://localhost:5000](http://localhost:5000)
 
 ## Screenshot
 ![Screenshot](screenshot.png)

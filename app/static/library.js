@@ -5,13 +5,13 @@ function updateSelection(item, list) {
 
 function appendAlbum(album) {
     return '' +
-        '<a href="#" class="list-group-item list-group-item-action justify-content-between align-items-center d-flex">' +
+        '<li class="link list-group-item list-group-item-action justify-content-between align-items-center d-flex">' +
             '<span>' +
                 '<span class="badge badge-secondary prefix">' + album.year + '</span>' +
                 '<span class="title">' + album.title + '</span>'+
             '</span>' +
             '<span class="badge badge-primary badge-pill">' + makeLengthReadable(album.length) + '</span>' +
-        '</a>'
+        '</li>'
 }
 
 function appendSong(song) {
@@ -37,7 +37,7 @@ function updateList(url, param, list, appendFnct, finishFnct) {
 }
 
 function playSong(file) {
-    $.get('/play', {'file': file});
+    $.get('/play', {'file': file}, updateStatus);
 }
 
 function initPlayButtonClickListener() {

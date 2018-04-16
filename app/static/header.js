@@ -24,8 +24,10 @@ $(document).ready(function(){
         if (state !== 'unknown') {
             const cmd = state === 'play' ? 'pause' : 'play';
             $.get('/control', {'cmd': cmd});
+            updateStatus();
         }
     });
 
-    setInterval(updateStatus, 1000);
+    updateStatus();
+    // setInterval(updateStatus, 1000);
 });
