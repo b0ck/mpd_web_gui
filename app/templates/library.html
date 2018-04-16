@@ -1,0 +1,36 @@
+<script src="{{ url_for('static', filename='library.js') }}"></script>
+
+<div class="row">
+    <div class="col-sm">
+        <div class="card">
+            <div class="card-header">
+                Artists
+            </div>
+            <ul class="list-group list-group-flush" id="artists">
+                {% if artists %}
+                    {% for artist in artists %}
+                        <a href="#" class="list-group-item list-group-item-action">{{ artist }}</a>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="card">
+            <div class="card-header">
+                Albums
+            </div>
+            <ul class="list-group list-group-flush" id="albums">
+            </ul>
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="card">
+            <div class="card-header">
+                Songs
+            </div>
+            <ul class="list-group list-group-flush" id="songs">
+            </ul>
+        </div>
+    </div>
+</div>

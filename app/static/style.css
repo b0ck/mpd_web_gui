@@ -1,0 +1,17 @@
+.badge.prefix {
+    margin-right: 4px;
+}
+
+.btn.play {
+    margin-right: 5px;
+}
+
+#cover {
+    width: 100px;
+    height: 100px;
+    background-size: 100px;
+    background: url("") no-repeat center;
+    margin-right: -10px;
+    margin-top: -10px;
+    margin-bottom: -10px;
+}

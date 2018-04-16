@@ -1,0 +1,25 @@
+<script src="{{ url_for('static', filename='header.js') }}"></script>
+
+<div class="card border-primary">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-1">
+                <button id="playback-btn" type="button" class="btn btn-outline-primary btn-lg disabled"><i class="fas fa-play"></i></button>
+            </div>
+            <div class="col-8">
+                <div>
+                    <span id="title">Song title</span> (<span id="length">0:00</span>)
+                </div>
+                <div>
+                    by <span id="artist">Artist</span>
+                </div>
+                <div>
+                    <span id="album">Album Name</span> - (#<span id="track">0</span>)
+                </div>
+            </div>
+            <div class="col-3">
+                <div id="cover" class="float-right"></div>
+            </div>
+        </div>
+    </div>
+</div>
