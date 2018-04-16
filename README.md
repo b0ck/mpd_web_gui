@@ -45,7 +45,7 @@ Then go to: [http://localhost:5000](http://localhost:5000)
 ## What is working
 * A very simple three pane music library (artists > albums > songs)
 * Play a song with a click on the play arrow
-* A status bar showing the current song (refreshes every 1s)
+* A status bar showing the current song (refreshes on song play/pause)
 * Pause/resume a song from the status bar
 
 ## What needs to be done
