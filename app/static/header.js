@@ -1,4 +1,7 @@
 var state = 'unknown';
+var mute_state = false;
+var volume_state = 100;
+var playButton, muteButton, content, volume_value;
 
 function updateStatus() {
     $.getJSON('/current', function(data) {
@@ -12,32 +15,54 @@ function updateStatus() {
 
     $.getJSON('/status', function(data) {
         state = data['state'];
-        const content = state === 'play' ? '<i class="fas fa-pause">' : '<i class="fas fa-play">';
-        const playBtn = $("#playback-btn");
-        playBtn.html(content);
-        playBtn.removeClass('disabled')
+        volume_state = parseInt(data['volume']);
+        content = state === 'play' ? '<i class="fas fa-pause">' : '<i class="fas fa-play">';
+        playButton.html(content);
+        playButton.removeClass('disabled');
     });
+}
+function play() {
+    if (state !== 'unknown') {
+        const cmd = state === 'play' ? 'pause' : 'play';
+        $.get('/control', {'cmd': cmd});
+        updateStatus();
+    }
+}
+
+function fastForward() {
+    if (state !== 'unknown') {
+        $.get('/control', {'cmd': 'next'});
+        updateStatus();
+    }
+}
+
+function fastBackward() {
+    if (state !== 'unknown') {
+        $.get('/control', {'cmd': 'previous'});
+        updateStatus();
+    }
+}
+
+function setVolume(vol_value) {
+    $.get('/volume', {'value': vol_value});
+    updateStatus();
+}
+
+function seek(seek_value){
+    $.get('/seek', {'value': seek_value});
+    updateStatus();
 }
 
 $(document).ready(function(){
-    $('#playback-btn').click(function() {
-        if (state !== 'unknown') {
-            const cmd = state === 'play' ? 'pause' : 'play';
-            $.get('/control', {'cmd': cmd});
-            updateStatus();
-        }
+    playButton = $("#playback-btn");
+    playButton.click(function() {
+        play();
     });
     $('#fast-forward-btn').click(function() {
-        if (state !== 'unknown') {
-            $.get('/control', {'cmd': 'next'});
-            updateStatus();
-        }
+        fastForward();
     });
     $('#fast-backward-btn').click(function() {
-        if (state !== 'unknown') {
-            $.get('/control', {'cmd': 'previous'});
-            updateStatus();
-        }
+        fastBackward();
     });
     updateStatus();
     // setInterval(updateStatus, 1000);

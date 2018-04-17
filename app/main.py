@@ -39,6 +39,22 @@ def play():
     return "Song should now be playing!"
 
 
+@app.route("/volume")
+def volume():
+    value = request.args.get('value')
+    api.set_volume(value=value)
+
+    return "Command executed!"
+
+
+@app.route("/seek")
+def seek():
+    value = request.args.get('value')
+    api.seek(value=value)
+
+    return "Command executed!"
+
+
 @app.route("/control")
 def control():
     cmd = request.args.get('cmd')
