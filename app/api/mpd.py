@@ -43,11 +43,17 @@ class MpdApi(object):
             self.client.connect(self.host, self.port)
             pass
 
-        except ConnectionError as ex:
-            print(ex)
+        except ConnectionError:
             pass
         
     def check_and_connect(self):
+        if self.client._sock:
+            try:
+                self.client.ping()
+            except:
+                self.connect()
+                pass
+
         if not self.client._sock:
             self.connect()
 
