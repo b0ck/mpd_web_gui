@@ -30,6 +30,8 @@ class MpdApi(object):
         self._execute(['mpd', '--kill'])
 
     def cleanup(self):
+        if self.client._sock:
+            self.client.disconnect()
         self._exit_mpd()
 
     def connect(self):
@@ -41,30 +43,31 @@ class MpdApi(object):
             self.client.connect(self.host, self.port)
             pass
 
-        except ConnectionError:
+        except ConnectionError as ex:
+            print(ex)
             pass
+        
+    def check_and_connect(self):
+        if not self.client._sock:
+            self.connect()
 
     def stop(self):
-        self.connect()
+        self.check_and_connect()
         self.client.stop()
-        self.client.disconnect()
 
     def pause(self):
-        self.connect()
+        self.check_and_connect()
         self.client.pause()
-        self.client.disconnect()
 
     def play(self):
-        self.connect()
+        self.check_and_connect()
         self.client.play()
-        self.client.disconnect()
 
     def play_song(self, song):
-        self.connect()
+        self.check_and_connect()
         self.client.clear()
         self.client.add(song)
         self.client.play()
-        self.client.disconnect()
 
     def add_to_playlist(song):
         pass
@@ -76,34 +79,29 @@ class MpdApi(object):
         pass
 
     def get_artists(self):
-        self.connect()
+        self.check_and_connect()
         artists = self.client.list('artist')
-        self.client.disconnect()
         return artists
 
     def get_albums(self, artist):
-        self.connect()
+        self.check_and_connect()
         songs = self.client.find('albumartist', artist)
-        self.client.disconnect()
         return songs
 
     def get_songs(self, artist, album):
-        self.connect()
+        self.check_and_connect()
         songs = self.client.find('albumartist', artist, 'album', album)
-        self.client.disconnect()
         return songs
 
     def get_titles(self):
         pass
 
     def get_status(self):
-        self.connect()
+        self.check_and_connect()
         status = self.client.status()
-        self.client.disconnect()
         return status
 
     def get_current_song(self):
-        self.connect()
+        self.check_and_connect()
         song = self.client.currentsong()
-        self.client.disconnect()
         return song
