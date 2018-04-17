@@ -27,7 +27,18 @@ $(document).ready(function(){
             updateStatus();
         }
     });
-
+    $('#fast-forward-btn').click(function() {
+        if (state !== 'unknown') {
+            $.get('/control', {'cmd': 'next'});
+            updateStatus();
+        }
+    });
+    $('#fast-backward-btn').click(function() {
+        if (state !== 'unknown') {
+            $.get('/control', {'cmd': 'previous'});
+            updateStatus();
+        }
+    });
     updateStatus();
     // setInterval(updateStatus, 1000);
 });

@@ -96,6 +96,22 @@ class MpdApi(object):
     def get_titles(self):
         pass
 
+    def set_volume(self, value):
+        self.check_and_connect()
+        self.client.set_vol(value)
+
+    def seek(self, value):
+        self.check_and_connect()
+        self.client.seek(value)
+
+    def next_song(self):
+        self.check_and_connect()
+        self.client.next()
+
+    def previous_song(self):
+        self.check_and_connect()
+        self.client.previous()
+
     def get_status(self):
         self.check_and_connect()
         status = self.client.status()

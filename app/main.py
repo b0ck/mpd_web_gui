@@ -48,6 +48,11 @@ def control():
         api.stop()
     elif cmd == 'play':
         api.play()
+    elif cmd == 'next':
+        api.next_song()
+    elif cmd == 'previous':
+        api.previous_song()
+
     return "Command executed!"
 
 
