@@ -15,7 +15,7 @@ function updateStatus() {
         const content = state === 'play' ? '<i class="fas fa-pause">' : '<i class="fas fa-play">';
         const playBtn = $("#playback-btn");
         playBtn.html(content);
-        playBtn.removeClass('disabled')
+        playBtn.removeClass('disabled');
     });
 }
 
@@ -27,18 +27,20 @@ $(document).ready(function(){
             updateStatus();
         }
     });
+
     $('#fast-forward-btn').click(function() {
         if (state !== 'unknown') {
             $.get('/control', {'cmd': 'next'});
             updateStatus();
         }
     });
+
     $('#fast-backward-btn').click(function() {
         if (state !== 'unknown') {
             $.get('/control', {'cmd': 'previous'});
             updateStatus();
         }
     });
+
     updateStatus();
-    // setInterval(updateStatus, 1000);
 });

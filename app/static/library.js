@@ -3,36 +3,30 @@ function updateSelection(item, list) {
     $(item).addClass('active');
 }
 
-function appendAlbum(album) {
-    return '' +
-        '<li class="link list-group-item list-group-item-action justify-content-between align-items-center d-flex">' +
-            '<span>' +
-                '<span class="badge badge-secondary prefix">' + album.year + '</span>' +
-                '<span class="title">' + album.title + '</span>'+
-            '</span>' +
-            '<span class="badge badge-primary badge-pill">' + makeLengthReadable(album.length) + '</span>' +
-        '</li>'
+function buildAlbum(album) {
+    const albumNode = $('#templates.hidden .album').clone(true);
+    albumNode.find('span.badge-secondary').text(album.year);
+    albumNode.find('span.title').text(album.title);
+    albumNode.find('span.badge-primary').text(makeLengthReadable(album.length));
+    return albumNode;
 }
 
-function appendSong(song) {
-    return '' +
-        '<li class="list-group-item list-group-item-action justify-content-between align-items-center d-flex">' +
-            '<span>' +
-                '<button type="button" class="btn btn-primary btn-sm play" file="' + song.file+ '"><i class="fas fa-play"></i></button>' +
-                '<span class="badge badge-secondary prefix">#' + song.track + '</span>' +
-                '<span class="title">' + song.title + '</span>'+
-            '</span>' +
-            '<span class="badge badge-primary badge-pill">' + makeLengthReadable(song.length) + '</span>' +
-        '</li>'
+function buildSong(song) {
+    const songNode = $('#templates.hidden .song').clone(true);
+    songNode.find('button').attr('file', song.file);
+    songNode.find('span.badge-secondary').text(song.track);
+    songNode.find('span.title').text(song.title);
+    songNode.find('span.badge-primary').text(makeLengthReadable(song.length));
+    return songNode;
 }
 
-function updateList(url, param, list, appendFnct, finishFnct) {
-    $.getJSON(url, param, function(data) {
+function updateList(url, params, list, buildNode) {
+    $.getJSON(url, params, function(data) {
         list.empty();
+
         $.each(data, function(key, val) {
-            list.append(appendFnct(val));
+            list.append(buildNode(val));
         });
-        finishFnct();
     });
 }
 
@@ -49,27 +43,31 @@ function initPlayButtonClickListener() {
 }
 
 function initAlbumClickListener() {
-    $('#albums').children().click(function() {
+    const albums = $('li.album');
+
+    albums.click(function() {
         updateSelection(this, '#albums');
 
-        const param = {
+        const requestParams = {
             'artist': $('#artists .active').text(),
             'album': $(this).find('.title').text()
         };
 
         updateList(
             '/songs',
-            param, $('#songs'),
-            appendSong,
-            initPlayButtonClickListener);
+            requestParams,
+            $('#songs'),
+            buildSong);
     });
 }
 
 function initArtistClickListener() {
-    $('#artists').children().click(function() {
-        updateSelection(this, '#artists');
+    const artists = $('#artists');
 
-        const param = {
+    artists.children().click(function() {
+        updateSelection(this, artists);
+
+        const requestParams = {
             'artist': $(this).text()
         };
 
@@ -77,12 +75,14 @@ function initArtistClickListener() {
 
         updateList(
             '/albums',
-            param, $('#albums'),
-            appendAlbum,
-            initAlbumClickListener);
+            requestParams,
+            $('#albums'),
+            buildAlbum);
     });
 }
 
 $(document).ready(function(){
     initArtistClickListener();
+    initAlbumClickListener();
+    initPlayButtonClickListener();
 });
