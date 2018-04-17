@@ -51,6 +51,7 @@ class MpdApi(object):
             try:
                 self.client.ping()
             except:
+                self.disconnect()
                 self.connect()
                 pass
 
