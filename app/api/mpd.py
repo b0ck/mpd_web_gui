@@ -105,11 +105,11 @@ class MpdApi(object):
 
     def set_volume(self, value):
         self.check_and_connect()
-        self.client.set_vol(value)
+        self.client.setvol(value)
 
     def seek(self, value):
         self.check_and_connect()
-        self.client.seek(value)
+        self.client.seekcur(value)
 
     def next_song(self):
         self.check_and_connect()
