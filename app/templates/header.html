@@ -1,5 +1,3 @@
-<script src="{{ url_for('static', filename='header.js') }}"></script>
-
 <div class="card border-primary">
     <div class="card-body">
         <div class="row">
@@ -8,7 +6,7 @@
                 <button id="playback-btn" type="button" class="btn btn-outline-primary btn-lg disabled"><i class="fas fa-play"></i></button>
                 <button id="fast-backward-btn" type="button" class="btn btn-outline-primary btn-lg disabled"><i class="fas fa-fast-forward"></i></button>
             </div>
-            <div class="col-6">
+            <div class="col-8">
                 <div>
                     <span id="title">Song title</span> (<span id="length">0:00</span>)
                 </div>
@@ -19,7 +17,7 @@
                     <span id="album">Album Name</span> - (#<span id="track">0</span>)
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-1">
                 <div id="cover" class="float-right"></div>
             </div>
         </div>

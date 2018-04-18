@@ -1,56 +1,60 @@
 var state = 'unknown';
-var mute_state = false;
 var volume_state = 100;
-var playButton, muteButton, content, volume_value;
+var playButton, content, socket;
 
-function updateStatus() {
-    $.getJSON('/current', function(data) {
-        $('#title').text(data['title']);
-        $('#artist').text(data['artist']);
-        $('#album').text(data['album']);
-        $('#track').text(data['track']);
-        const length = makeLengthReadable(data['time']);
-        $('#length').text(length);
-    });
-
-    $.getJSON('/status', function(data) {
-        state = data['state'];
-        volume_state = parseInt(data['volume']);
-        content = state === 'play' ? '<i class="fas fa-pause">' : '<i class="fas fa-play">';
-        playButton.html(content);
-        playButton.removeClass('disabled');
-    });
+function refreshPlayerStatus(data){
+    state = data['state'];
+    volume_state = parseInt(data['volume']);
+    content = state === 'play' ? '<i class="fas fa-pause">' : '<i class="fas fa-play">';
+    playButton.html(content);
+    playButton.removeClass('disabled');
 }
+
+function refreshSongInformation(data){
+    $('#title').text(data['title']);
+    $('#artist').text(data['artist']);
+    $('#album').text(data['album']);
+    $('#track').text(data['track']);
+    const length = makeLengthReadable(data['time']);
+    $('#length').text(length);
+}
+
+function switchPlayButton() {
+    content = state === 'play' ? '<i class="fas fa-pause">' : '<i class="fas fa-play">';
+    playButton.html(content);
+}
+
 function play() {
     if (state !== 'unknown') {
         const cmd = state === 'play' ? 'pause' : 'play';
         $.get('/control', {'cmd': cmd});
-        updateStatus();
+        state = cmd;
+        switchPlayButton();
     }
 }
 
-function fastForward() {
-    if (state !== 'unknown') {
-        $.get('/control', {'cmd': 'next'});
-        updateStatus();
-    }
-}
-
-function fastBackward() {
-    if (state !== 'unknown') {
-        $.get('/control', {'cmd': 'previous'});
-        updateStatus();
-    }
+function runCommand(path, command) {
+    $.get(path, command);
 }
 
 function setVolume(vol_value) {
     $.get('/volume', {'value': vol_value});
-    updateStatus();
 }
 
 function seek(seek_value){
     $.get('/seek', {'value': seek_value});
-    updateStatus();
+}
+
+function connectSocket(){
+    socket = io.connect('//'+document.domain + ':' + location.port);
+    socket.on('connect', function() {
+        socket.on('set status', function(data){
+            refreshPlayerStatus(data);
+        });
+        socket.on('current', function(data){
+            refreshSongInformation(data)
+        });
+    });
 }
 
 $(document).ready(function(){
@@ -59,13 +63,13 @@ $(document).ready(function(){
         play();
     });
 
-    $('#fast-forward-btn').click(function() {
-        fastForward();
-    });
-
     $('#fast-backward-btn').click(function() {
-        fastBackward();
+       runCommand('/control', {'cmd': 'next'});
     });
 
-    updateStatus();
+    $('#fast-forward-btn').click(function() {
+        runCommand('/control', {'cmd': 'previous'});
+    });
+
+    connectSocket();
 });
