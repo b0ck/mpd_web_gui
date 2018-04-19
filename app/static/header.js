@@ -27,14 +27,10 @@ function switchPlayButton() {
 function play() {
     if (state !== 'unknown') {
         const cmd = state === 'play' ? 'pause' : 'play';
-        $.get('/control', {'cmd': cmd});
+        $.get('/control/'+cmd);
         state = cmd;
         switchPlayButton();
     }
-}
-
-function runCommand(path, command) {
-    $.get(path, command);
 }
 
 function setVolume(vol_value) {
@@ -64,11 +60,11 @@ $(document).ready(function(){
     });
 
     $('#fast-backward-btn').click(function() {
-       runCommand('/control', {'cmd': 'next'});
+        $.get('/control/next');
     });
 
     $('#fast-forward-btn').click(function() {
-        runCommand('/control', {'cmd': 'previous'});
+        $.get('/control/previous');
     });
 
     connectSocket();

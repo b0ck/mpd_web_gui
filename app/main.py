@@ -76,9 +76,8 @@ def seek():
     return "Command executed!"
 
 
-@app.route("/control")
-def control():
-    cmd = request.args.get('cmd')
+@app.route("/control/<cmd>")
+def control(cmd):
     if cmd in command_dict.keys():
         method = getattr(api, command_dict.get(cmd))
         method()
@@ -108,7 +107,7 @@ def start_sender():
         try:
             socketio.emit('set status', data=api.get_status(), json=True)
             socketio.emit('current', data=api.get_current_song(), json=True)
-            time.sleep(5)
+            time.sleep(1)
         except Exception as ex:
             print(ex)
             pass
