@@ -32,7 +32,7 @@ Optional: run mpd (will be started automatically): `mpd`
 Create virtualenv: `virtualenv env`  
 Activate virtualenv: `source env/bin/activate`  
 Install dependencies: `pip install -r requirements.txt`  
-Or manually: `pip install flask && pip install python-mpd2`
+Or manually: `pip install flask && pip install python-mpd2 && pip install flask-socketio && pip install gevent`
 
 ## Running server
 `python player.py`
@@ -47,12 +47,12 @@ Then go to: [http://localhost:5000](http://localhost:5000)
 * Play a song with a click on the play arrow
 * A status bar showing the current song (refreshes on song play/pause)
 * Pause/resume a song from the status bar
+* Show song progress
+* socket communication for UI updates 
 
 ## What needs to be done
 * Implement a playlist
 * Show album cover
-* Better network implementation of status updates (e.g. socket communication)
-* Show song progress
 
 ## In the far far future
 * Change loudness of songs
