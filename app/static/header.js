@@ -3,7 +3,7 @@ var volume_state = 100;
 var slider_lock = false;
 var slider_value = 0;
 var duration = 0;
-var playButton, content, socket, cur_length, length;
+var playButton, content, socket, cur_length, length, slider;
 
 function refreshPlayerStatus(data){
     cur_length = makeLengthReadable(data['elapsed']);
@@ -16,7 +16,7 @@ function refreshPlayerStatus(data){
     if(!slider_lock){
         duration = data['duration'];
         $('#title_cur_length').text(cur_length);
-        slider_value = (data['elapsed'] / duration)* 100;
+        slider_value = (data['elapsed'] / duration) * 100;
         $('#durationSlider').val(slider_value);
         $('#title_length').text(makeLengthReadable(duration));
     }
@@ -86,6 +86,13 @@ $(document).ready(function(){
         seek((duration / 100) * slider_value);
         slider_lock = false;
     });
+
+    slider = document.getElementById('durationSlider');
+    slider.oninput = function() {
+        $('#title_cur_length').text(
+            makeLengthReadable((duration / 100 )*this.value)
+        );
+    };
 
     connectSocket();
 });
