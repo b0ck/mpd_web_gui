@@ -1,9 +1,12 @@
 <!doctype html>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='third_party/bootstrap_darkly.min.css') }}" media="screen">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='third_party/bootstrap-darkly.min.css') }}" media="screen">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<script src="{{ url_for('static', filename='third_party/socket-io-2.1.min.js') }}"></script>
 <script src="{{ url_for('static', filename='third_party/jquery-3.3.1.min.js') }}"></script>
-<script defer src="{{ url_for('static', filename='third_party/fontawesome_all-5.0.10.js') }}"></script>
+<script defer src="{{ url_for('static', filename='third_party/fontawesome-all-5.0.10.js') }}"></script>
 <script src="{{ url_for('static', filename='helper.js') }}"></script>
+<script src="{{ url_for('static', filename='header.js') }}"></script>
+<script src="{{ url_for('static', filename='library.js') }}"></script>
 
 <title>MPD Web GUI</title>
 

@@ -1,56 +1,66 @@
 var state = 'unknown';
-var mute_state = false;
 var volume_state = 100;
-var playButton, muteButton, content, volume_value;
+var slider_lock = false;
+var slider_value = 0;
+var duration = 0;
+var playButton, content, socket, cur_length, length, slider;
 
-function updateStatus() {
-    $.getJSON('/current', function(data) {
-        $('#title').text(data['title']);
-        $('#artist').text(data['artist']);
-        $('#album').text(data['album']);
-        $('#track').text(data['track']);
-        const length = makeLengthReadable(data['time']);
-        $('#length').text(length);
-    });
+function refreshPlayerStatus(data){
+    cur_length = makeLengthReadable(data['elapsed']);
+    state = data['state'];
+    volume_state = parseInt(data['volume']);
 
-    $.getJSON('/status', function(data) {
-        state = data['state'];
-        volume_state = parseInt(data['volume']);
-        content = state === 'play' ? '<i class="fas fa-pause">' : '<i class="fas fa-play">';
-        playButton.html(content);
-        playButton.removeClass('disabled');
-    });
+    switchPlayButton();
+    playButton.removeClass('disabled');
+
+    if(!slider_lock){
+        duration = data['duration'];
+        $('#title_cur_length').text(cur_length);
+        slider_value = (data['elapsed'] / duration) * 100;
+        $('#durationSlider').val(slider_value);
+        $('#title_length').text(makeLengthReadable(duration));
+    }
 }
+
+function refreshSongInformation(data){
+    $('#title').text(data['title']);
+    $('#artist').text(data['artist']);
+    $('#album').text(data['album']);
+    $('#track').text(data['track']);
+}
+
+function switchPlayButton() {
+    content = state === 'play' ? '<i class="fas fa-pause">' : '<i class="fas fa-play">';
+    playButton.html(content);
+}
+
 function play() {
     if (state !== 'unknown') {
         const cmd = state === 'play' ? 'pause' : 'play';
-        $.get('/control', {'cmd': cmd});
-        updateStatus();
-    }
-}
-
-function fastForward() {
-    if (state !== 'unknown') {
-        $.get('/control', {'cmd': 'next'});
-        updateStatus();
-    }
-}
-
-function fastBackward() {
-    if (state !== 'unknown') {
-        $.get('/control', {'cmd': 'previous'});
-        updateStatus();
+        $.get('/control/'+cmd);
+        state = cmd;
+        switchPlayButton();
     }
 }
 
 function setVolume(vol_value) {
     $.get('/volume', {'value': vol_value});
-    updateStatus();
 }
 
 function seek(seek_value){
     $.get('/seek', {'value': seek_value});
-    updateStatus();
+}
+
+function connectSocket(){
+    socket = io.connect('//'+document.domain + ':' + location.port);
+    socket.on('connect', function() {
+        socket.on('set status', function(data){
+            refreshPlayerStatus(data);
+        });
+        socket.on('current', function(data){
+            refreshSongInformation(data)
+        });
+    });
 }
 
 $(document).ready(function(){
@@ -59,13 +69,30 @@ $(document).ready(function(){
         play();
     });
 
-    $('#fast-forward-btn').click(function() {
-        fastForward();
-    });
-
     $('#fast-backward-btn').click(function() {
-        fastBackward();
+        $.get('/control/next');
     });
 
-    updateStatus();
+    $('#fast-forward-btn').click(function() {
+        $.get('/control/previous');
+    });
+
+    $('#durationSlider').mousedown(function () {
+        slider_lock = true;
+    });
+
+    $('#durationSlider').mouseup(function () {
+        slider_value = $('#durationSlider').val();
+        seek((duration / 100) * slider_value);
+        slider_lock = false;
+    });
+
+    slider = document.getElementById('durationSlider');
+    slider.oninput = function() {
+        $('#title_cur_length').text(
+            makeLengthReadable((duration / 100 )*this.value)
+        );
+    };
+
+    connectSocket();
 });

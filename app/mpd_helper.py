@@ -11,14 +11,6 @@ class Album:
         self.length = 0
 
 
-class Song:
-    def __init__(self):
-        self.track = 0
-        self.title = ''
-        self.length = 0
-        self.file = ''
-
-
 def get_or_append_album(albums, album):
     """ returns the album from the list if we already
      know it or adds it """
@@ -50,12 +42,15 @@ def parse_albums_from_mpd(data):
 
 def parse_songs_from_mpd(data):
     songs_json = []
+
     for song_data in data:
-        song = Song()
-        song.track = song_data['track']
-        song.title = song_data['title']
-        song.length = song_data['time']
-        song.file = song_data['file']
-        songs_json.append(song.__dict__)
+        songs_json.append(
+            {
+                'track': song_data.get('track', 0),
+                'title': song_data.get('title', ''),
+                'length': song_data.get('time', 0),
+                'file':  song_data.get('file', '')
+            }
+        )
 
     return songs_json

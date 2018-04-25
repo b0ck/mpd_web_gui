@@ -5,3 +5,5 @@ Jinja2==2.10
 MarkupSafe==1.0
 python-mpd2==1.0.0
 Werkzeug==0.14.1
+flask-socketio==2.9.6
+gevent==1.2.2
