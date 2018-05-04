@@ -103,6 +103,7 @@ def handle_reload():
 def start_sender():
     global last_song
     global last_status
+    global api
     current_song = None
     current_status = None
 
