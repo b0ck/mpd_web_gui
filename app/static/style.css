@@ -10,14 +10,13 @@
     cursor: pointer;
 }
 
+#buttons {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
 #cover {
-    width: 100px;
-    height: 100px;
-    background-size: 100px;
-    background: url("cover.png") no-repeat center;
-    margin-right: -10px;
-    margin-top: -10px;
-    margin-bottom: -10px;
+
 }
 
 .hidden {
@@ -60,6 +59,38 @@
     cursor: pointer;
 }
 
-p{
+p {
     margin-bottom: 0px;
+}
+
+#songs .badge-secondary::before {
+    content: "#";
+}
+
+#artist::before {
+    content: "by ";
+}
+
+#track::before {
+    content: "Track #";
+}
+
+#album::before {
+    content: "from ";
+}
+
+#song-tags {
+    margin-top: 20px;
+}
+
+.nav.nav-pills {
+    margin-bottom: 10px;
+}
+
+.stars {
+    font-size: 0.8em;
+}
+
+.checked {
+    color: orange;
 }

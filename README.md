@@ -48,7 +48,7 @@ Then go to: [http://localhost:5000](http://localhost:5000)
 * A status bar showing the current song (refreshes on song play/pause)
 * Pause/resume a song from the status bar
 * Show song progress
-* socket communication for UI updates 
+* Socket communication for UI updates 
 
 ## What needs to be done
 * Implement a playlist

@@ -63,7 +63,7 @@ function connectSocket(){
     });
 }
 
-$(document).ready(function(){
+$(function(){
     playButton = $("#playback-btn");
     playButton.click(function() {
         play();

@@ -1,35 +1,29 @@
-<div class="row">
-    <div class="col-sm">
-        <div class="card">
-            <div class="card-header">
-                Artists
-            </div>
-            <ul class="list-group list-group-flush" id="artists">
-                {% if artists %}
-                    {% for artist in artists %}
-                        <li class="link list-group-item list-group-item-action">{{ artist }}</li>
-                    {% endfor %}
-                {% endif %}
-            </ul>
-        </div>
+<ul class="nav nav-pills" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="nav-artists-tab" data-toggle="pill" href="#nav-artists" role="tab" aria-controls="nav-artists" aria-selected="true">Artists</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="nav-albums-tab" data-toggle="pill" href="#nav-albums" role="tab" aria-controls="nav-albums" aria-selected="false">Albums</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="nav-songs-tab" data-toggle="pill" href="#nav-songs" role="tab" aria-controls="nav-songs" aria-selected="false">Songs</a>
+    </li>
+</ul>
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-artists" role="tabpanel" aria-labelledby="nav-artists-tab">
+        <ul class="list-group list-group-flush" id="artists">
+            {% if artists %}
+                {% for artist in artists %}
+                    <li class="link list-group-item list-group-item-action">{{ artist }}</li>
+                {% endfor %}
+            {% endif %}
+        </ul>
     </div>
-    <div class="col-sm">
-        <div class="card">
-            <div class="card-header">
-                Albums
-            </div>
-            <ul class="list-group list-group-flush" id="albums">
-            </ul>
-        </div>
+    <div class="tab-pane fade" id="nav-albums" role="tabpanel" aria-labelledby="nav-albums-tab">
+        <ul class="list-group list-group-flush" id="albums"></ul>
     </div>
-    <div class="col-sm">
-        <div class="card">
-            <div class="card-header">
-                Songs
-            </div>
-            <ul class="list-group list-group-flush" id="songs">
-            </ul>
-        </div>
+    <div class="tab-pane fade" id="nav-songs" role="tabpanel" aria-labelledby="nav-songs-tab">
+        <ul class="list-group list-group-flush" id="songs"></ul>
     </div>
 </div>
 

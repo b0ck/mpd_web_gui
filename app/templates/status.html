@@ -1,0 +1,33 @@
+<div class="row">
+    <div class="col" style="max-width: 200px">
+        <div id="buttons">
+            <button id="fast-forward-btn" type="button" class="btn btn-outline-primary btn-lg disabled"><i class="fas fa-fast-backward"></i></button>
+            <button id="playback-btn" type="button" class="btn btn-outline-primary btn-lg disabled"><i class="fas fa-play"></i></button>
+            <button id="fast-backward-btn" type="button" class="btn btn-outline-primary btn-lg disabled"><i class="fas fa-fast-forward"></i></button>
+        </div>
+        <img id="cover" class="card-img" src="{{ url_for('static', filename='cover.png') }}" alt="Album cover">
+    </div>
+
+    <div class="col">
+        <div class="slidecontainer">
+            <span id="title_cur_length">0:00</span> - <span id="title_length">0:00</span>
+            <input type="range" min="0" max="100" value="0" class="slider" id="durationSlider">
+        </div>
+
+        <div id="song-tags">
+            <p id="title">Song title</p>
+            <p id="artist">Artist</p>
+            <p id="rating">
+                <span class="stars">
+                    <span class="fa fa-star checked"></span>
+                    <span class="fa fa-star checked"></span>
+                    <span class="fa fa-star checked"></span>
+                    <span class="fa fa-star"></span>
+                    <span class="fa fa-star"></span>
+                </span>
+            </p>
+            <p id="album">Album</p>
+            <p id="track">Track</p>
+        </div>
+    </div>
+</div>

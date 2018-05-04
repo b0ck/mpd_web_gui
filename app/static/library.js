@@ -57,6 +57,8 @@ function initAlbumClickListener() {
             'album': $(this).find('.title').text()
         };
 
+        $('#nav-songs-tab').tab('show');
+
         updateList(
             '/songs',
             requestParams,
@@ -76,6 +78,7 @@ function initArtistClickListener() {
         };
 
         $('#songs').empty();
+        $('#nav-albums-tab').tab('show');
 
         updateList(
             '/albums',
@@ -85,7 +88,7 @@ function initArtistClickListener() {
     });
 }
 
-$(document).ready(function(){
+$(function(){
     initArtistClickListener();
     initAlbumClickListener();
     initPlayButtonClickListener();
