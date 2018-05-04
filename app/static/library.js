@@ -32,7 +32,6 @@ function updateList(url, params, list, buildNode) {
 
 function playSong(file) {
     $.get('/play', {'file': file}, function(data){
-        refreshSongInformation(data);
         state = 'play';
         switchPlayButton();
     });

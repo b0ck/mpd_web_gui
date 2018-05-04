@@ -18,7 +18,6 @@ function refreshPlayerStatus(data){
         $('#title_cur_length').text(cur_length);
         slider_value = (data['elapsed'] / duration) * 100;
         $('#durationSlider').val(slider_value);
-        $('#title_length').text(makeLengthReadable(duration));
     }
 }
 
@@ -27,6 +26,7 @@ function refreshSongInformation(data){
     $('#artist').text(data['artist']);
     $('#album').text(data['album']);
     $('#track').text(data['track']);
+    $('#title_length').text(makeLengthReadable(data['duration']));
 }
 
 function switchPlayButton() {
@@ -54,10 +54,10 @@ function seek(seek_value){
 function connectSocket(){
     socket = io.connect('//'+document.domain + ':' + location.port);
     socket.on('connect', function() {
-        socket.on('set status', function(data){
+        socket.on('set player status', function(data){
             refreshPlayerStatus(data);
         });
-        socket.on('current', function(data){
+        socket.on('set song info', function(data){
             refreshSongInformation(data)
         });
     });
@@ -95,4 +95,10 @@ $(function(){
     };
 
     connectSocket();
+    $.get('/current', {}, function (data) {
+        refreshSongInformation(data);
+    });
+    $.get('/info', {}, function (data) {
+        refreshPlayerStatus(data);
+    });
 });

@@ -5,17 +5,14 @@ from threading import Lock
 from flask import Flask, render_template, request, jsonify
 from mpd_helper import parse_albums_from_mpd, parse_songs_from_mpd
 from flask_socketio import SocketIO
+from config import Config
 
 from api import MpdApi
-
-DEBUG_MODE = True
-HOST = '0.0.0.0'
-PORT = 5000
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = ''
 socketio = SocketIO(app)
-api = MpdApi()
+api = MpdApi(host=Config.MPD_CLIENT_HOST, port=Config.MPD_CLIENT_PORT, use_unicode=Config.MPD_CLIENT_USE_UNICODE)
 thread = None
 thread_lock = Lock()
 command_dict = {
@@ -56,8 +53,7 @@ def songs():
 @app.route("/play")
 def play():
     api.play_song(request.args.get('file'))
-
-    return jsonify(api.get_current_song())
+    return "Command executed!"
 
 
 @app.route("/volume")
@@ -90,6 +86,11 @@ def current():
     return jsonify(api.get_current_song())
 
 
+@app.route("/info")
+def info():
+    return jsonify(api.get_status())
+
+
 ###################
 # SOCKET COMMANDS #
 ###################
@@ -103,10 +104,22 @@ def handle_connect():
 
 
 def start_sender():
+    last_song = None
+    current_song = None
+    last_status = None
+    current_status = None
     while True:
         try:
-            socketio.emit('set status', data=api.get_status(), json=True)
-            socketio.emit('current', data=api.get_current_song(), json=True)
+            current_status = api.get_status()
+            if last_status != current_status:
+                socketio.emit('set player status', data=current_status, json=True)
+                last_status = current_status
+
+            current_song = api.get_current_song()
+            if last_song != current_song:
+                socketio.emit('set song info', data=current_song, json=True)
+                last_song = current_song
+
             time.sleep(1)
         except Exception as ex:
             print(ex)
@@ -114,8 +127,8 @@ def start_sender():
 
 
 def start_server():
-    socketio.run(app, host=HOST, port=PORT, debug=DEBUG_MODE)
+    socketio.run(app, host=Config.SERVER_HOST, port=Config.SERVER_PORT, debug=Config.SERVER_DEBUG_MODE)
 
-
+api._start_mpd()
 start_server()
 atexit.register(api.cleanup)
