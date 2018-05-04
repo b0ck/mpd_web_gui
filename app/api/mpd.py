@@ -29,52 +29,35 @@ class MpdApi(object):
     def _exit_mpd(self):
         self._execute(['mpd', '--kill'])
 
+    def _send_command(self, name, data=None, *args):
+        if not self.client._sock:
+            self.client.connect(self.host, self.port)
+        method = getattr(self.client, name)
+        if data:
+            result = method(data)
+        elif args:
+            result = method(*args)
+        else:
+            result = method()
+        self.client.disconnect()
+        return result
+
     def cleanup(self):
-        if self.client._sock:
-            self.client.disconnect()
         self._exit_mpd()
 
-    def connect(self):
-        try:
-            self.client.connect(self.host, self.port)
-
-        except ConnectionRefusedError:
-            self._start_mpd()
-            self.client.connect(self.host, self.port)
-            pass
-
-        except ConnectionError:
-            pass
-        
-    def check_and_connect(self):
-        if self.client._sock:
-            try:
-                self.client.ping()
-            except:
-                self.client.disconnect()
-                self.connect()
-                pass
-
-        if not self.client._sock:
-            self.connect()
-
     def stop(self):
-        self.check_and_connect()
-        self.client.stop()
+        self._send_command(name='stop')
 
     def pause(self):
-        self.check_and_connect()
-        self.client.pause()
+        self._send_command(name='pause')
 
     def play(self):
-        self.check_and_connect()
-        self.client.play()
+        self._send_command(name='play')
 
     def play_song(self, song):
-        self.check_and_connect()
-        self.client.clear()
-        self.client.add(song)
-        self.client.play()
+        self._send_command(name='clear')
+        self._send_command(name='add', data=song)
+        self.play()
 
     def add_to_playlist(song):
         pass
@@ -86,45 +69,31 @@ class MpdApi(object):
         pass
 
     def get_artists(self):
-        self.check_and_connect()
-        artists = self.client.list('artist')
-        return artists
+        return self._send_command(name='list', data='artist')
 
     def get_albums(self, artist):
-        self.check_and_connect()
-        songs = self.client.find('albumartist', artist)
-        return songs
+        return self._send_command('find', None, 'albumartist', artist)
 
     def get_songs(self, artist, album):
-        self.check_and_connect()
-        songs = self.client.find('albumartist', artist, 'album', album)
-        return songs
+        return self._send_command('find', None, 'albumartist', artist, 'album', album)
 
     def get_titles(self):
         pass
 
     def set_volume(self, value):
-        self.check_and_connect()
-        self.client.setvol(value)
+        self._send_command(name='setvol', data=value)
 
     def seek(self, value):
-        self.check_and_connect()
-        self.client.seekcur(value)
+        self._send_command(name='seekcur', data=value)
 
     def next_song(self):
-        self.check_and_connect()
-        self.client.next()
+        self._send_command(name='next')
 
     def previous_song(self):
-        self.check_and_connect()
-        self.client.previous()
+        self._send_command(name='previous')
 
     def get_status(self):
-        self.check_and_connect()
-        status = self.client.status()
-        return status
+        return self._send_command(name='status')
 
     def get_current_song(self):
-        self.check_and_connect()
-        song = self.client.currentsong()
-        return song
+        return self._send_command(name='currentsong')
