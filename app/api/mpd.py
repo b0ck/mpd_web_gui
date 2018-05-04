@@ -5,10 +5,10 @@ import subprocess
 
 class MpdApi(object):
 
-    def __init__(self):
-        self.client = mpd.MPDClient(use_unicode=True)
-        self.host = "localhost"
-        self.port = 6600
+    def __init__(self, host='localhost', port=6600, use_unicode=True):
+        self.client = mpd.MPDClient(use_unicode=use_unicode)
+        self.host = host
+        self.port = port
         self.logger = logging.getLogger('player')
 
     def _execute(self, cmd):

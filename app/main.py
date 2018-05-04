@@ -5,17 +5,14 @@ from threading import Lock
 from flask import Flask, render_template, request, jsonify
 from mpd_helper import parse_albums_from_mpd, parse_songs_from_mpd
 from flask_socketio import SocketIO
+from config import Config
 
 from api import MpdApi
-
-DEBUG_MODE = True
-HOST = '0.0.0.0'
-PORT = 5000
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = ''
 socketio = SocketIO(app)
-api = MpdApi()
+api = MpdApi(host=Config.MPD_CLIENT_HOST, port=Config.MPD_CLIENT_PORT, use_unicode=Config.MPD_CLIENT_USE_UNICODE)
 thread = None
 thread_lock = Lock()
 command_dict = {
@@ -114,7 +111,7 @@ def start_sender():
 
 
 def start_server():
-    socketio.run(app, host=HOST, port=PORT, debug=DEBUG_MODE)
+    socketio.run(app, host=Config.SERVER_HOST, port=Config.SERVER_PORT, debug=Config.SERVER_DEBUG_MODE)
 
 
 start_server()
