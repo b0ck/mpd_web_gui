@@ -23,6 +23,8 @@ command_dict = {
     'previous': 'previous_song'
 }
 
+last_song = None
+last_status = None
 
 @app.route("/")
 def player():
@@ -81,16 +83,6 @@ def control(cmd):
     return "Command executed!"
 
 
-@app.route("/current")
-def current():
-    return jsonify(api.get_current_song())
-
-
-@app.route("/info")
-def info():
-    return jsonify(api.get_status())
-
-
 ###################
 # SOCKET COMMANDS #
 ###################
@@ -100,14 +92,21 @@ def handle_connect():
     with thread_lock:
         if thread is None:
             thread = socketio.start_background_task(target=start_sender)
-    return ''
+
+
+@socketio.on('reload')
+def handle_reload():
+    socketio.emit('set player status', data=last_status, json=True)
+    socketio.emit('set song info', data=last_song, json=True)
 
 
 def start_sender():
-    last_song = None
+    global last_song
+    global last_status
+    global api
     current_song = None
-    last_status = None
     current_status = None
+
     while True:
         try:
             current_status = api.get_status()
@@ -121,6 +120,7 @@ def start_sender():
                 last_song = current_song
 
             time.sleep(1)
+
         except Exception as ex:
             print(ex)
             pass
