@@ -60,6 +60,7 @@ function connectSocket(){
         socket.on('set song info', function(data){
             refreshSongInformation(data)
         });
+        socket.emit('reload');
     });
 }
 
@@ -95,10 +96,4 @@ $(function(){
     };
 
     connectSocket();
-    $.get('/current', {}, function (data) {
-        refreshSongInformation(data);
-    });
-    $.get('/info', {}, function (data) {
-        refreshPlayerStatus(data);
-    });
 });
