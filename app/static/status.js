@@ -1,9 +1,10 @@
 var state = 'unknown';
-var volume_state = 100;
+var volume_state = 0;
 var slider_lock = false;
 var slider_value = 0;
 var duration = 0;
-var playButton, content, socket, cur_length, length, slider;
+var socket = io.connect('//'+document.domain + ':' + location.port);
+var playButton, content, cur_length, length, slider;
 
 function refreshPlayerStatus(data){
     cur_length = makeLengthReadable(data['elapsed']);
@@ -37,47 +38,29 @@ function switchPlayButton() {
 function play() {
     if (state !== 'unknown') {
         const cmd = state === 'play' ? 'pause' : 'play';
-        $.get('/control/'+cmd);
-        state = cmd;
-        switchPlayButton();
+        socket.emit('command', {'cmd':cmd});
     }
 }
 
 function setVolume(vol_value) {
-    $.get('/volume', {'value': vol_value});
+    socket.emit('command', {'cmd':'volume', 'data':{'value':vol_value}});
 }
 
 function seek(seek_value){
-    $.get('/seek', {'value': seek_value});
+    socket.emit('command', {'cmd':'seek', 'data':{'value':seek_value}});
 }
 
-function connectSocket(){
-    socket = io.connect('//'+document.domain + ':' + location.port);
-    socket.on('connect', function() {
-        socket.on('set player status', function(data){
-            refreshPlayerStatus(data);
-        });
-        socket.on('set song info', function(data){
-            refreshSongInformation(data)
-        });
-        socket.emit('reload');
+function prepareSocket(){
+    socket.on('set player status', function(data){
+        refreshPlayerStatus(data);
     });
+    socket.on('set song info', function(data){
+        refreshSongInformation(data)
+    });
+    socket.emit('reload');
 }
 
-$(function(){
-    playButton = $("#playback-btn");
-    playButton.click(function() {
-        play();
-    });
-
-    $('#fast-backward-btn').click(function() {
-        $.get('/control/next');
-    });
-
-    $('#fast-forward-btn').click(function() {
-        $.get('/control/previous');
-    });
-
+function initDurationSlider(){
     $('#durationSlider').mousedown(function () {
         slider_lock = true;
     });
@@ -94,6 +77,21 @@ $(function(){
             makeLengthReadable((duration / 100 )*this.value)
         );
     };
+}
 
-    connectSocket();
+$(function(){
+    playButton = $("#playback-btn");
+    playButton.click(function() {
+        play();
+    });
+
+    $('#fast-backward-btn').click(function() {
+        socket.emit('command', {'cmd':'next'});
+    });
+
+    $('#fast-forward-btn').click(function() {
+        socket.emit('command', {'cmd':'previous'});
+    });
+    initDurationSlider();
+    prepareSocket();
 });

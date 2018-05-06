@@ -31,10 +31,7 @@ function updateList(url, params, list, buildNode) {
 }
 
 function playSong(file) {
-    $.get('/play', {'file': file}, function(data){
-        state = 'play';
-        switchPlayButton();
-    });
+    socket.emit('command', {'cmd':'play_song', 'data':{'song':file}});
 }
 
 function initPlayButtonClickListener() {

@@ -20,11 +20,15 @@ command_dict = {
     'play': 'play',
     'stop': 'stop',
     'next': 'next_song',
-    'previous': 'previous_song'
+    'previous': 'previous_song',
+    'seek': 'seek',
+    'volume': 'set_volume',
+    'play_song': 'play_song'
 }
 
 last_song = None
 last_status = None
+
 
 @app.route("/")
 def player():
@@ -52,52 +56,33 @@ def songs():
     return jsonify(songs)
 
 
-@app.route("/play")
-def play():
-    api.play_song(request.args.get('file'))
-    return "Command executed!"
-
-
-@app.route("/volume")
-def volume():
-    value = request.args.get('value')
-    api.set_volume(value=value)
-
-    return "Command executed!"
-
-
-@app.route("/seek")
-def seek():
-    value = request.args.get('value')
-    api.seek(value=value)
-
-    return "Command executed!"
-
-
-@app.route("/control/<cmd>")
-def control(cmd):
-    if cmd in command_dict.keys():
-        method = getattr(api, command_dict.get(cmd))
-        method()
-
-    return "Command executed!"
-
-
 ###################
 # SOCKET COMMANDS #
 ###################
-@socketio.on('connect')
-def handle_connect():
-    global thread
-    with thread_lock:
-        if thread is None:
-            thread = socketio.start_background_task(target=start_sender)
+@socketio.on('command')
+def handle_command(data):
+    if isinstance(data, dict):
+        if 'cmd' in data.keys():
+            if data['cmd'] in command_dict.keys():
+                method = getattr(api, command_dict.get(data['cmd']))
+                if 'data' in data.keys():
+                    method(**data['data'])
+                else:
+                    method()
 
 
 @socketio.on('reload')
 def handle_reload():
     socketio.emit('set player status', data=last_status, json=True)
     socketio.emit('set song info', data=last_song, json=True)
+
+
+@socketio.on('connect')
+def handle_connect():
+    global thread
+    with thread_lock:
+        if thread is None:
+            thread = socketio.start_background_task(target=start_sender)
 
 
 def start_sender():
