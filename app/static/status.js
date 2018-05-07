@@ -4,7 +4,14 @@ var slider_lock = false;
 var slider_value = 0;
 var duration = 0;
 var socket = io.connect('//'+document.domain + ':' + location.port);
-var playButton, content, cur_length, length, slider;
+var playButton, current_list, content, cur_length, length, slider;
+
+function refreshPlaylist(data) {
+    current_list.empty();
+    $.each(data, function() {
+        current_list.append(buildSongCurrent(this));
+    });
+}
 
 function refreshPlayerStatus(data){
     cur_length = makeLengthReadable(data['elapsed']);
@@ -57,6 +64,9 @@ function prepareSocket(){
     socket.on('set song info', function(data){
         refreshSongInformation(data)
     });
+    socket.on('set current play list', function(data){
+        refreshPlaylist(data)
+    });
     socket.emit('reload');
 }
 
@@ -84,6 +94,7 @@ $(function(){
     playButton.click(function() {
         play();
     });
+    current_list = $('#current-songs');
 
     $('#fast-backward-btn').click(function() {
         socket.emit('command', {'cmd':'next'});

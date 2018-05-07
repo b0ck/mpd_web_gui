@@ -49,8 +49,8 @@ def parse_songs_from_mpd(data):
                 'track': song_data.get('track', 0),
                 'title': song_data.get('title', ''),
                 'length': song_data.get('time', 0),
-                'file':  song_data.get('file', '')
+                'file': song_data.get('file', ''),
+                'pos': song_data.get('pos', 0)
             }
         )
-
     return songs_json

@@ -8,6 +8,9 @@
     <li class="nav-item">
         <a class="nav-link" id="nav-songs-tab" data-toggle="pill" href="#nav-songs" role="tab" aria-controls="nav-songs" aria-selected="false">Songs</a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link" id="nav-current-songs-tab" data-toggle="pill" href="#nav-current-songs" role="tab" aria-controls="nav-current-songs" aria-selected="false">Current</a>
+    </li>
 </ul>
 <div class="tab-content" id="nav-tabContent">
     <div class="tab-pane fade show active" id="nav-artists" role="tabpanel" aria-labelledby="nav-artists-tab">
@@ -25,6 +28,9 @@
     <div class="tab-pane fade" id="nav-songs" role="tabpanel" aria-labelledby="nav-songs-tab">
         <ul class="list-group list-group-flush" id="songs"></ul>
     </div>
+    <div class="tab-pane fade" id="nav-current-songs" role="tabpanel" aria-labelledby="nav-current-songs-tab">
+        <ul class="list-group list-group-flush" id="current-songs"></ul>
+    </div>
 </div>
 
 <!-- hidden elements for list population -->
@@ -38,7 +44,23 @@
     </li>
     <li class="song list-group-item list-group-item-action justify-content-between align-items-center d-flex">
         <span>
+            <button type="button" class="btn btn-primary btn-sm add">
+                <i class="fas fa-plus"></i>
+            </button>
             <button type="button" class="btn btn-primary btn-sm play">
+                <i class="fas fa-play"></i>
+            </button>
+            <span class="badge badge-secondary prefix"></span>
+            <span class="title"></span>
+        </span>
+        <span class="badge badge-primary badge-pill"></span>
+    </li>
+    <li class="song-current list-group-item list-group-item-action justify-content-between align-items-center d-flex">
+        <span>
+            <button type="button" class="btn btn-primary btn-sm delete-current">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-sm play-current">
                 <i class="fas fa-play"></i>
             </button>
             <span class="badge badge-secondary prefix"></span>

@@ -51,21 +51,27 @@ class MpdApi(object):
     def pause(self):
         self._send_command(name='pause')
 
-    def play(self):
-        self._send_command(name='play')
+    def play(self, pos=None):
+        self._send_command(name='play', data=pos)
+
+    def add_song_to_current_playlist(self, song):
+        self._send_command(name='add', data=song)
+
+    def delete_song_from_current_playlist(self, pos):
+        self._send_command(name='delete', data=pos)
 
     def play_song(self, song):
         self._send_command(name='clear')
-        self._send_command(name='add', data=song)
+        self.add_song_to_current_playlist(song=song)
         self.play()
 
-    def add_to_playlist(self, song):
-        pass
+    def get_current_list(self):
+        return self._send_command(name='playlistinfo')
+
+    def add_to_playlist(self, name, song):
+        self._send_command('playlistadd', None, name, song)
 
     def get_random_song(self):
-        pass
-
-    def get_playlist(self):
         pass
 
     def get_artists(self):

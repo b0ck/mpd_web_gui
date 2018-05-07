@@ -23,11 +23,15 @@ command_dict = {
     'previous': 'previous_song',
     'seek': 'seek',
     'volume': 'set_volume',
-    'play_song': 'play_song'
+    'play_song': 'play_song',
+    'play_pos': 'play',
+    'add_song': 'add_song_to_current_playlist',
+    'delete_song': 'delete_song_from_current_playlist'
 }
 
 last_song = None
 last_status = None
+last_play_list = None
 
 
 @app.route("/")
@@ -75,6 +79,7 @@ def handle_command(data):
 def handle_reload():
     socketio.emit('set player status', data=last_status, json=True)
     socketio.emit('set song info', data=last_song, json=True)
+    socketio.emit('set current play list', data=last_play_list, json=True)
 
 
 @socketio.on('connect')
@@ -88,9 +93,11 @@ def handle_connect():
 def start_sender():
     global last_song
     global last_status
+    global last_play_list
     global api
     current_song = None
     current_status = None
+    current_play_list = None
 
     while True:
         try:
@@ -104,6 +111,10 @@ def start_sender():
                 socketio.emit('set song info', data=current_song, json=True)
                 last_song = current_song
 
+            current_play_list = parse_songs_from_mpd(api.get_current_list())
+            if last_play_list != current_play_list:
+                socketio.emit('set current play list', data=current_play_list, json=True)
+                last_play_list = current_play_list
             time.sleep(1)
 
         except Exception as ex:

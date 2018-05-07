@@ -13,12 +13,24 @@ function buildAlbum(album) {
 
 function buildSong(song) {
     const songNode = $('#templates.hidden .song').clone(true);
-    songNode.find('button').attr('file', song.file);
+    songNode.find('button.add').attr('file', song.file);
+    songNode.find('button.play').attr('file', song.file);
     songNode.find('span.badge-secondary').text(song.track);
     songNode.find('span.title').text(song.title);
     songNode.find('span.badge-primary').text(makeLengthReadable(song.length));
     return songNode;
 }
+
+function buildSongCurrent(song) {
+    const songNode = $('#templates.hidden .song-current').clone(true);
+    songNode.find('button.delete-current').attr('pos', song.pos);
+    songNode.find('button.play-current').attr('pos', song.pos);
+    songNode.find('span.badge-secondary').text(song.track);
+    songNode.find('span.title').text(song.title);
+    songNode.find('span.badge-primary').text(makeLengthReadable(song.length));
+    return songNode;
+}
+
 
 function updateList(url, params, list, buildNode) {
     $.getJSON(url, params, function(data) {
@@ -30,8 +42,20 @@ function updateList(url, params, list, buildNode) {
     });
 }
 
+function playPos(pos) {
+    socket.emit('command', {'cmd':'play_pos', 'data':{'pos':pos}});
+}
+
 function playSong(file) {
     socket.emit('command', {'cmd':'play_song', 'data':{'song':file}});
+}
+
+function addSong(file) {
+    socket.emit('command', {'cmd':'add_song', 'data':{'song':file}});
+}
+
+function deleteSong(pos) {
+    socket.emit('command', {'cmd':'delete_song', 'data':{'pos':pos}});
 }
 
 function initPlayButtonClickListener() {
@@ -39,7 +63,16 @@ function initPlayButtonClickListener() {
         var item = $(this).parent().parent();
         updateSelection(item, '#songs');
         playSong($(this).attr('file'));
-    })
+    });
+    $('.btn.add').click(function() {
+        addSong($(this).attr('file'));
+    });
+    $('.btn.play-current').click(function() {
+        playPos($(this).attr('pos'));
+    });
+    $('.btn.delete-current').click(function() {
+        deleteSong($(this).attr('pos'));
+    });
 }
 
 function initAlbumClickListener() {
