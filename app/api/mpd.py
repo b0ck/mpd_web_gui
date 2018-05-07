@@ -59,7 +59,7 @@ class MpdApi(object):
         self._send_command(name='add', data=song)
         self.play()
 
-    def add_to_playlist(song):
+    def add_to_playlist(self, song):
         pass
 
     def get_random_song(self):
