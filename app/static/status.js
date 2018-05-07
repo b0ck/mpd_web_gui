@@ -1,9 +1,7 @@
-var state = 'unknown';
 var volume_state = 0;
 var slider_lock = false;
 var slider_value = 0;
 var duration = 0;
-var socket = io.connect('//'+document.domain + ':' + location.port);
 var playButton, current_list, content, cur_length, length, slider;
 
 function refreshPlaylist(data) {
@@ -42,21 +40,6 @@ function switchPlayButton() {
     playButton.html(content);
 }
 
-function play() {
-    if (state !== 'unknown') {
-        const cmd = state === 'play' ? 'pause' : 'play';
-        socket.emit('command', {'cmd':cmd});
-    }
-}
-
-function setVolume(vol_value) {
-    socket.emit('command', {'cmd':'volume', 'data':{'value':vol_value}});
-}
-
-function seek(seek_value){
-    socket.emit('command', {'cmd':'seek', 'data':{'value':seek_value}});
-}
-
 function prepareSocket(){
     socket.on('set player status', function(data){
         refreshPlayerStatus(data);
@@ -89,20 +72,16 @@ function initDurationSlider(){
     };
 }
 
-$(function(){
+function initButtons(){
     playButton = $("#playback-btn");
-    playButton.click(function() {
-        play();
-    });
+    playButton.click(function() {play();});
+    $('#fast-backward-btn').click(function() {playNext();});
+    $('#fast-forward-btn').click(function() {playPrevious();});
+}
+
+$(function(){
     current_list = $('#current-songs');
-
-    $('#fast-backward-btn').click(function() {
-        socket.emit('command', {'cmd':'next'});
-    });
-
-    $('#fast-forward-btn').click(function() {
-        socket.emit('command', {'cmd':'previous'});
-    });
+    initButtons();
     initDurationSlider();
     prepareSocket();
 });

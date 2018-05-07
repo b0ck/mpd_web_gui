@@ -42,22 +42,6 @@ function updateList(url, params, list, buildNode) {
     });
 }
 
-function playPos(pos) {
-    socket.emit('command', {'cmd':'play_pos', 'data':{'pos':pos}});
-}
-
-function playSong(file) {
-    socket.emit('command', {'cmd':'play_song', 'data':{'song':file}});
-}
-
-function addSong(file) {
-    socket.emit('command', {'cmd':'add_song', 'data':{'song':file}});
-}
-
-function deleteSong(pos) {
-    socket.emit('command', {'cmd':'delete_song', 'data':{'pos':pos}});
-}
-
 function initPlayButtonClickListener() {
     $('.btn.play').click(function() {
         var item = $(this).parent().parent();
