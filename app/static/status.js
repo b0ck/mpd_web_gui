@@ -1,10 +1,15 @@
-var state = 'unknown';
 var volume_state = 0;
 var slider_lock = false;
 var slider_value = 0;
 var duration = 0;
-var socket = io.connect('//'+document.domain + ':' + location.port);
-var playButton, content, cur_length, length, slider;
+var playButton, current_list, content, cur_length, length, slider;
+
+function refreshPlaylist(data) {
+    current_list.empty();
+    $.each(data, function() {
+        current_list.append(buildSongCurrent(this));
+    });
+}
 
 function refreshPlayerStatus(data){
     cur_length = makeLengthReadable(data['elapsed']);
@@ -35,27 +40,15 @@ function switchPlayButton() {
     playButton.html(content);
 }
 
-function play() {
-    if (state !== 'unknown') {
-        const cmd = state === 'play' ? 'pause' : 'play';
-        socket.emit('command', {'cmd':cmd});
-    }
-}
-
-function setVolume(vol_value) {
-    socket.emit('command', {'cmd':'volume', 'data':{'value':vol_value}});
-}
-
-function seek(seek_value){
-    socket.emit('command', {'cmd':'seek', 'data':{'value':seek_value}});
-}
-
 function prepareSocket(){
     socket.on('set player status', function(data){
         refreshPlayerStatus(data);
     });
     socket.on('set song info', function(data){
         refreshSongInformation(data)
+    });
+    socket.on('set current play list', function(data){
+        refreshPlaylist(data)
     });
     socket.emit('reload');
 }
@@ -79,19 +72,16 @@ function initDurationSlider(){
     };
 }
 
-$(function(){
+function initButtons(){
     playButton = $("#playback-btn");
-    playButton.click(function() {
-        play();
-    });
+    playButton.click(function() {play();});
+    $('#fast-backward-btn').click(function() {playNext();});
+    $('#fast-forward-btn').click(function() {playPrevious();});
+}
 
-    $('#fast-backward-btn').click(function() {
-        socket.emit('command', {'cmd':'next'});
-    });
-
-    $('#fast-forward-btn').click(function() {
-        socket.emit('command', {'cmd':'previous'});
-    });
+$(function(){
+    current_list = $('#current-songs');
+    initButtons();
     initDurationSlider();
     prepareSocket();
 });
